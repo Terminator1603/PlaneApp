@@ -22,12 +22,15 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
     Camera camera;
     ShowCamera showCamera;
     FrameLayout frameLayout;
-
+    Timer timer;
+    TimerTask task = new Helper();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         final Button endCap = findViewById(R.id.stopCapture);
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
 
-
+        timer = new Timer();
         //open camera
         camera = Camera.open();
         showCamera = new ShowCamera(this, camera);
@@ -46,13 +49,17 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                    camera.takePicture(null, null, nPictureCallback);
-
+                    timer.scheduleAtFixedRate(task, new Date(), 10000);
+                //camera.takePicture(null,null,nPictureCallback);
             }
         });
     }
 
+    class Helper extends TimerTask {
+        public void run() {
+            camera.takePicture(null,null,nPictureCallback);
+        }
+    }
 
     Camera.PictureCallback nPictureCallback = new Camera.PictureCallback() {
         @Override
